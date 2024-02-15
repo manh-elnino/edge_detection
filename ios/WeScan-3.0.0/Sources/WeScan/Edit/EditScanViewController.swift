@@ -34,7 +34,7 @@ final class EditScanViewController: UIViewController {
         let title = NSLocalizedString("wescan.edit.button.next",
                                       tableName: nil,
                                       bundle: Bundle(for: EditScanViewController.self),
-                                      value: "Next",
+                                      value: "次",
                                       comment: "A generic next button"
         )
         let button = UIBarButtonItem(title: title, style: .plain, target: self, action: #selector(pushReviewController))
@@ -46,10 +46,22 @@ final class EditScanViewController: UIViewController {
         let title = NSLocalizedString("wescan.scanning.cancel",
                                       tableName: nil,
                                       bundle: Bundle(for: EditScanViewController.self),
-                                      value: "Cancel",
+                                      value: "キャンセル",
                                       comment: "A generic cancel button"
         )
         let button = UIBarButtonItem(title: title, style: .plain, target: self, action: #selector(cancelButtonTapped))
+        button.tintColor = navigationController?.navigationBar.tintColor
+        return button
+    }()
+
+    private lazy var backButton: UIBarButtonItem = {
+        let title = NSLocalizedString("wescan.edit.button.back",
+                                      tableName: nil,
+                                      bundle: Bundle(for: EditScanViewController.self),
+                                      value: "戻る",
+                                      comment: "A generic back button"
+        )
+        let button = UIBarButtonItem(title: title, style: .plain, target: self, action: #selector(backButtonTapped))
         button.tintColor = navigationController?.navigationBar.tintColor
         return button
     }()
@@ -85,14 +97,14 @@ final class EditScanViewController: UIViewController {
         title = NSLocalizedString("wescan.edit.title",
                                   tableName: nil,
                                   bundle: Bundle(for: EditScanViewController.self),
-                                  value: "Edit Scan",
+                                  value: "スキャン編集",
                                   comment: "The title of the EditScanViewController"
         )
         navigationItem.rightBarButtonItem = nextButton
         if let firstVC = self.navigationController?.viewControllers.first, firstVC == self {
             navigationItem.leftBarButtonItem = cancelButton
         } else {
-            navigationItem.leftBarButtonItem = nil
+            navigationItem.leftBarButtonItem = backButton
         }
 
         zoomGestureController = ZoomGestureController(image: image, quadView: quadView)
@@ -149,6 +161,10 @@ final class EditScanViewController: UIViewController {
         if let imageScannerController = navigationController as? ImageScannerController {
             imageScannerController.imageScannerDelegate?.imageScannerControllerDidCancel(imageScannerController)
         }
+    }
+
+    @objc func backButtonTapped() {
+        navigationController?.popViewController(animated: true)
     }
 
     @objc func pushReviewController() {

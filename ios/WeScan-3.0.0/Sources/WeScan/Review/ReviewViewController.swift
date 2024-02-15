@@ -46,8 +46,15 @@ final class ReviewViewController: UIViewController {
         return button
     }()
 
+    
     private lazy var doneButton: UIBarButtonItem = {
-        let button = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(finishScan))
+        let title = NSLocalizedString("wescan.edit.button.done",
+                                      tableName: nil,
+                                      bundle: Bundle(for: EditScanViewController.self),
+                                      value: "完了",
+                                      comment: "A generic done button"
+        )
+        let button = UIBarButtonItem(title: title, style: .plain, target: self, action: #selector(finishScan))
         button.tintColor = navigationController?.navigationBar.tintColor
         return button
     }()
@@ -77,7 +84,7 @@ final class ReviewViewController: UIViewController {
         title = NSLocalizedString("wescan.review.title",
                                   tableName: nil,
                                   bundle: Bundle(for: ReviewViewController.self),
-                                  value: "Review",
+                                  value: "レビュー",
                                   comment: "The review title of the ReviewController"
         )
         navigationItem.rightBarButtonItem = doneButton
