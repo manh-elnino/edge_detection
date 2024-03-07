@@ -34,7 +34,7 @@ final class EditScanViewController: UIViewController {
         let title = NSLocalizedString("wescan.edit.button.next",
                                       tableName: nil,
                                       bundle: Bundle(for: EditScanViewController.self),
-                                      value: "次",
+                                      value: "次へ",
                                       comment: "A generic next button"
         )
         let button = UIBarButtonItem(title: title, style: .plain, target: self, action: #selector(pushReviewController))
