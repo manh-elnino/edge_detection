@@ -75,11 +75,16 @@ final class CaptureSessionManager: NSObject, AVCaptureVideoDataOutputSampleBuffe
         }
 
         super.init()
-
-        guard let device = AVCaptureDevice.default(for: AVMediaType.video) else {
+        
+        guard var device = AVCaptureDevice.default(for: AVMediaType.video) else {
             let error = ImageScannerControllerError.inputDevice
             delegate?.captureSessionManager(self, didFailWithError: error)
             return nil
+        }
+        
+        if let currentDevice = AVCaptureDevice.default(.builtInTripleCamera, for: AVMediaType.video, position: .back)
+        {
+            device = currentDevice
         }
 
         captureSession.beginConfiguration()
@@ -105,6 +110,9 @@ final class CaptureSessionManager: NSObject, AVCaptureVideoDataOutputSampleBuffe
 
         do {
             try device.lockForConfiguration()
+            let zoomFactor:CGFloat = 6
+            device.videoZoomFactor = zoomFactor
+    
         } catch {
             let error = ImageScannerControllerError.inputDevice
             delegate?.captureSessionManager(self, didFailWithError: error)
