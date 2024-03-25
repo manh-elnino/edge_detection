@@ -9,25 +9,44 @@ import WeScan
 import Flutter
 import Foundation
 
+@available(iOS 13.0, *) // `isModalInPresentation` がiOS13からなので
+class ImagePickerControllerContainer: UIViewController {
+
+    // あえてイニシャライザでimagePickerを受け取るようにしたほうがDelegateの設定とかやりやすい
+    init(imagePicker: UIImagePickerController) {
+        super.init(nibName: nil, bundle: nil)
+
+        isModalInPresentation = true
+
+        addChild(imagePicker)
+        imagePicker.didMove(toParent: self)
+        view.addSubview(imagePicker.view)
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+}
+
 class ScanPhotoViewController: UIViewController, ImageScannerControllerDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
-    
+
     var _result:FlutterResult?
     var saveTo: String = ""
-    
+
     public func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
         picker.dismiss(animated: true)
-        
+
         _result!(false)
         dismiss(animated: true)
     }
-    
+
     public func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]) {
         picker.dismiss(animated: true)
-        
+
         guard let image = info[.originalImage] as? UIImage else { return }
         let scannerVC = ImageScannerController(image: image)
         scannerVC.imageScannerDelegate = self
-        
+
         if #available(iOS 13.0, *) {
             scannerVC.isModalInPresentation = true
             scannerVC.overrideUserInterfaceStyle = .dark
@@ -35,9 +54,9 @@ class ScanPhotoViewController: UIViewController, ImageScannerControllerDelegate,
         }
         present(scannerVC, animated: true)
     }
-    
+
     override func viewDidAppear(_ animated: Bool) {
-        
+
         // Temp fix for https://github.com/WeTransfer/WeScan/issues/320
         if #available(iOS 15, *) {
             let appearance = UINavigationBarAppearance()
@@ -47,20 +66,21 @@ class ScanPhotoViewController: UIViewController, ImageScannerControllerDelegate,
             appearance.backgroundColor = .systemBackground
             navigationBar.standardAppearance = appearance;
             UINavigationBar.appearance().scrollEdgeAppearance = appearance
-            
+
             let appearanceTB = UITabBarAppearance()
             appearanceTB.configureWithOpaqueBackground()
             appearanceTB.backgroundColor = .systemBackground
             UITabBar.appearance().standardAppearance = appearanceTB
             UITabBar.appearance().scrollEdgeAppearance = appearanceTB
         }
-        
+
         if self.isBeingPresented {
             let imagePicker = UIImagePickerController()
+            let vc = ImagePickerControllerContainer(imagePicker: imagePicker)
             imagePicker.delegate = self
             imagePicker.sourceType = .photoLibrary
-            
-            present(imagePicker, animated: true)
+
+            present(vc, animated: true)
         }
     }
     
